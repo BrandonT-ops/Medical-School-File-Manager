@@ -21,6 +21,19 @@
                     <p>{{ $schoolTagline ?? 'File Management System' }}</p>
                 </div>
             </div>
+            @auth
+            <div class="header-search" style="flex: 1; max-width: 400px; margin: 0 var(--spacing-md);">
+                <form action="{{ route('search') }}" method="GET" style="width: 100%;">
+                    <input
+                        type="text"
+                        name="q"
+                        class="form-control"
+                        placeholder="Search files and folders..."
+                        style="width: 100%; margin: 0;"
+                    >
+                </form>
+            </div>
+            @endauth
             <div class="header-user">
                 @auth
                     <span><strong>{{ auth()->user()->name }}</strong></span>

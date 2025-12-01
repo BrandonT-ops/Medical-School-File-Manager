@@ -663,6 +663,26 @@ tbody td {
 .w-full { width: 100%; }
 
 /* ========================================
+   SEARCH
+======================================== */
+
+.header-search {
+    display: flex;
+    align-items: center;
+}
+
+.header-search .form-control {
+    border: var(--border-width) solid var(--color-border);
+    background: var(--color-card);
+}
+
+.header-search .form-control:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 4px 4px 0 var(--color-accent);
+}
+
+/* ========================================
    RESPONSIVE DESIGN
 ======================================== */
 
@@ -682,6 +702,13 @@ tbody td {
         flex-direction: column;
         gap: var(--spacing-sm);
         align-items: flex-start;
+    }
+
+    .header-search {
+        width: 100%;
+        max-width: 100% !important;
+        margin: 0 !important;
+        order: 3;
     }
 
     .header-brand h1 {
