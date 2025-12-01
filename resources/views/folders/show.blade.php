@@ -52,11 +52,111 @@
                             <td>{{ $folder->description }}</td>
                         </tr>
                         @endif
+                        <tr>
+                            <td><strong>Status</strong></td>
+                            <td>
+                                @if($folder->isPublic())
+                                <span class="user-badge" style="background: #06A77D; color: white;">PUBLIC</span>
+                                <span style="margin-left: var(--spacing-xs); font-size: 0.875rem;">
+                                    ({{ implode(', ', $folder->getPublicPermissions()) }})
+                                </span>
+                                @else
+                                <span class="user-badge" style="background: var(--color-primary); color: white;">PRIVATE</span>
+                                @endif
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    <!-- Public Access Controls (Admin Only) -->
+    @can('admin')
+    <div class="card" style="background: var(--color-accent);">
+        <div class="card-header">
+            <h3>Public Access Settings (Admin)</h3>
+        </div>
+        <div class="card-body" style="padding: var(--spacing-md);">
+            <form action="{{ route('folders.toggle-public', $folder) }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label class="form-label">Public Access</label>
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            id="is_public"
+                            name="is_public"
+                            value="1"
+                            class="form-check-input"
+                            {{ $folder->isPublic() ? 'checked' : '' }}
+                            onchange="document.getElementById('permissionsSection').style.display = this.checked ? 'block' : 'none'"
+                        >
+                        <label for="is_public">Make this folder publicly accessible to all users</label>
+                    </div>
+                    <span class="form-help">When enabled, all authenticated users can access this folder</span>
+                </div>
+
+                <div id="permissionsSection" style="{{ $folder->isPublic() ? 'display: block;' : 'display: none;' }}">
+                    <div class="form-group">
+                        <label class="form-label">Public Permissions</label>
+                        @php
+                            $currentPerms = $folder->getPublicPermissions();
+                        @endphp
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                id="perm_read"
+                                name="public_permissions[]"
+                                value="read"
+                                class="form-check-input"
+                                checked
+                                disabled
+                            >
+                            <label for="perm_read">Read (always enabled for public folders)</label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                id="perm_write"
+                                name="public_permissions[]"
+                                value="write"
+                                class="form-check-input"
+                                {{ in_array('write', $currentPerms) ? 'checked' : '' }}
+                            >
+                            <label for="perm_write">Write (upload files)</label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                id="perm_delete"
+                                name="public_permissions[]"
+                                value="delete"
+                                class="form-check-input"
+                                {{ in_array('delete', $currentPerms) ? 'checked' : '' }}
+                            >
+                            <label for="perm_delete">Delete (remove files)</label>
+                        </div>
+                        <input type="hidden" name="public_permissions[]" value="read">
+                    </div>
+
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            id="apply_to_files"
+                            name="apply_to_files"
+                            value="1"
+                            class="form-check-input"
+                        >
+                        <label for="apply_to_files">Also apply public status to all files in this folder</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2">Update Public Access</button>
+            </form>
+        </div>
+    </div>
+    @endcan
 
     <!-- Quick Actions -->
     <div class="card">

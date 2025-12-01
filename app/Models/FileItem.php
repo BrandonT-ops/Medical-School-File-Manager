@@ -26,6 +26,7 @@ class FileItem extends Model
         'size',
         'owner_id',
         'is_archived',
+        'is_public',
         'storage_provider',
         'external_id',
     ];
@@ -37,6 +38,7 @@ class FileItem extends Model
      */
     protected $casts = [
         'is_archived' => 'boolean',
+        'is_public' => 'boolean',
         'size' => 'integer',
         'deleted_at' => 'datetime',
     ];
@@ -152,11 +154,24 @@ class FileItem extends Model
             return true;
         }
 
+        // Public file - everyone can read
+        if ($this->is_public) {
+            return true;
+        }
+
         // Check folder permissions if file is in a folder
         if ($this->folder) {
             return $this->folder->userHasPermission($user, 'read');
         }
 
         return false;
+    }
+
+    /**
+     * Check if file is public
+     */
+    public function isPublic(): bool
+    {
+        return $this->is_public || ($this->folder && $this->folder->isPublic());
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\SharedFilesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,9 +38,14 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Shared Files - Accessible to all authenticated users
+    Route::get('/shared', [SharedFilesController::class, 'index'])->name('shared.index');
+    Route::get('/shared/folders/{folder}', [SharedFilesController::class, 'show'])->name('shared.show');
+
     // Folders
     Route::resource('folders', FolderController::class);
     Route::post('/folders/{folder}/permissions', [FolderController::class, 'updatePermissions'])->name('folders.permissions');
+    Route::post('/folders/{folder}/toggle-public', [FolderController::class, 'togglePublic'])->name('folders.toggle-public');
 
     // Files
     Route::get('/files/{file}/download', [FileController::class, 'download'])->name('files.download');

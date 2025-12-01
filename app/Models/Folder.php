@@ -22,6 +22,8 @@ class Folder extends Model
         'owner_id',
         'permissions',
         'description',
+        'is_public',
+        'public_permissions',
     ];
 
     /**
@@ -32,6 +34,8 @@ class Folder extends Model
     protected $casts = [
         'permissions' => 'array',
         'deleted_at' => 'datetime',
+        'is_public' => 'boolean',
+        'public_permissions' => 'array',
     ];
 
     /**
@@ -118,6 +122,14 @@ class Folder extends Model
             return true;
         }
 
+        // Public folder - check public permissions
+        if ($this->is_public) {
+            $publicPerms = $this->public_permissions ?? ['read']; // Default: read-only
+            if (in_array($permission, $publicPerms)) {
+                return true;
+            }
+        }
+
         // Check explicit permissions
         $permissions = $this->permissions ?? [];
         if (isset($permissions[$user->id])) {
@@ -125,6 +137,31 @@ class Folder extends Model
         }
 
         return false;
+    }
+
+    /**
+     * Check if folder is publicly accessible
+     */
+    public function isPublic(): bool
+    {
+        return $this->is_public;
+    }
+
+    /**
+     * Get public permissions
+     */
+    public function getPublicPermissions(): array
+    {
+        return $this->public_permissions ?? ['read'];
+    }
+
+    /**
+     * Set public permissions
+     */
+    public function setPublicPermissions(array $permissions)
+    {
+        $this->public_permissions = $permissions;
+        $this->save();
     }
 
     /**

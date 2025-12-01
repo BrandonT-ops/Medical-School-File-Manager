@@ -171,4 +171,38 @@ class FolderController extends Controller
             ->route('folders.show', $folder)
             ->with('success', 'Permissions updated successfully!');
     }
+
+    /**
+     * Toggle folder public/private status (Admin only)
+     */
+    public function togglePublic(Request $request, Folder $folder)
+    {
+        // Only admins can make folders public
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'Only administrators can manage public folders.');
+        }
+
+        $request->validate([
+            'is_public' => 'required|boolean',
+            'public_permissions' => 'nullable|array',
+            'public_permissions.*' => 'in:read,write,delete',
+        ]);
+
+        $folder->is_public = $request->is_public;
+        $folder->public_permissions = $request->public_permissions ?? ['read'];
+        $folder->save();
+
+        // Optionally apply to all files in folder
+        if ($request->apply_to_files) {
+            $folder->files()->update(['is_public' => $request->is_public]);
+        }
+
+        $message = $folder->is_public
+            ? 'Folder is now publicly accessible!'
+            : 'Folder is now private.';
+
+        return redirect()
+            ->route('folders.show', $folder)
+            ->with('success', $message);
+    }
 }

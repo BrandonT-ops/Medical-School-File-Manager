@@ -33,8 +33,9 @@
         @auth
         <nav class="main-nav" id="mainNav">
             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
-            <a href="{{ route('folders.index') }}" class="nav-link {{ request()->routeIs('folders.*') ? 'active' : '' }}">Folders</a>
-            <a href="{{ route('files.index') }}" class="nav-link {{ request()->routeIs('files.*') ? 'active' : '' }}">Files</a>
+            <a href="{{ route('shared.index') }}" class="nav-link {{ request()->routeIs('shared.*') ? 'active' : '' }}">Shared Files</a>
+            <a href="{{ route('folders.index') }}" class="nav-link {{ request()->routeIs('folders.*') ? 'active' : '' }}">My Folders</a>
+            <a href="{{ route('files.index') }}" class="nav-link {{ request()->routeIs('files.*') ? 'active' : '' }}">My Files</a>
 
             @can('access-archive')
             <a href="{{ route('archive.index') }}" class="nav-link {{ request()->routeIs('archive.*') ? 'active' : '' }}">Archive</a>
